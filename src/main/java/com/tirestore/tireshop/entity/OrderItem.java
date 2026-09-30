@@ -1,6 +1,7 @@
 package com.tirestore.tireshop.entity;
 
 
+import com.tirestore.tireshop.entity.id.OrderItemId;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,15 +16,16 @@ import java.math.BigDecimal;
 @Table(name = "order_item")
 public class OrderItem {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @EmbeddedId
+    private OrderItemId orderItemId = new OrderItemId();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("orderId")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "order_id")
     private Order order;// !-
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("itemId")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "item_id")
     private Item item;// !-
 

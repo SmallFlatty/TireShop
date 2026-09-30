@@ -6,7 +6,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
 
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,8 +29,11 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name= "user_id")
-    private long userId;
+    private int userId;
 
+
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(Types.OTHER)
     @Column(name = "role")
     private Role role;
 
@@ -44,6 +49,6 @@ public class Account {
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL,orphanRemoval = true)
     private List<CartItem> cartItems = new ArrayList<>();
 
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
-    private List<Order> orderItems = new ArrayList<>();
+    @OneToMany(mappedBy = "account")
+    private List<Order> orders = new ArrayList<>();
 }
