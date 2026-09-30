@@ -57,6 +57,4 @@ public abstract class Item {
 
     @OneToMany(mappedBy = "item")
     private List<OrderItem> orderItems = new ArrayList<>();// !-
-
-
 }
