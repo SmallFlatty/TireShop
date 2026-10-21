@@ -17,8 +17,8 @@ import java.math.BigDecimal;
 @PrimaryKeyJoinColumn(name = "wheel_id")
 public class Wheel extends Item{
 
-    public Wheel(String name, BigDecimal price, Integer stock, Integer holesNum, BigDecimal circleDiameter, BigDecimal width, Integer diameter) {
-        super(name, price, stock);
+    public Wheel(String name, String description,String publicId, BigDecimal price, Integer stock, Integer holesNum, BigDecimal circleDiameter, BigDecimal width, Integer diameter) {
+        super(name,description, publicId, price, stock);
         super.setProductType(ProductType.WHEEL);
         this.holesNum = holesNum;
         this.circleDiameter = circleDiameter;

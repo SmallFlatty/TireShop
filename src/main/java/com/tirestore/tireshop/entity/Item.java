@@ -20,8 +20,10 @@ import java.util.List;
 @NoArgsConstructor
 public abstract class Item {
 
-    public Item (String name, BigDecimal price, Integer stock) {
+    public Item (String name,String description,String publicId, BigDecimal price, Integer stock) {
         this.name = name;
+        this.description = description;
+        this.publicId = publicId;
         this.price = price;
         this.stock = stock;
         this.isActive = true;

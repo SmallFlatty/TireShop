@@ -19,8 +19,8 @@ import java.sql.Types;
 @PrimaryKeyJoinColumn(name = "tire_id")
 public class Tire extends Item {
 
-    public Tire(String name, BigDecimal price, Integer stock, Integer width, Integer profile, Character speedRating, Integer diameter, SeasonType seasonType) {
-        super(name, price, stock);
+    public Tire(String name,String description,String publicId, BigDecimal price, Integer stock, Integer width, Integer profile, Character speedRating, Integer diameter, SeasonType seasonType) {
+        super(name,description,publicId, price, stock);
         super.setProductType(ProductType.TIRE);
         this.width = width;
         this.profile = profile;

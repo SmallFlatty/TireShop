@@ -1,9 +1,10 @@
 package com.tirestore.tireshop.service;
 
-import com.tirestore.tireshop.entity.Account;
 import com.tirestore.tireshop.repository.AccountRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+
+@Service
 public class AuthService {
 
     private final AccountRepository accountRepository;

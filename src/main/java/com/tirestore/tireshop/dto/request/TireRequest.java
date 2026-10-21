@@ -6,13 +6,13 @@ import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 
 public record TireRequest(
-        @Size(max = 150) @NotBlank String name,
-        String description,
+        @NotNull @Size(max = 150) @NotBlank String name,
+        @NotNull @Size(max = 244) String description,
         @Digits(integer = 8,fraction = 2) @NotNull @Positive BigDecimal price,
         @NotNull @PositiveOrZero Integer stock,
-        @Positive Integer width,
-        @Positive Integer profile,
-        Character speedRating,
-        @Positive Integer diameter,
-        SeasonType seasonType
+        @NotNull @Positive Integer width,
+        @NotNull @Positive Integer profile,
+        @NotNull @Pattern(regexp = "[LMNPQRSTUHVWYZ]") String speedRating,
+        @NotNull @Positive Integer diameter,
+        @NotNull SeasonType seasonType
 ) {}
