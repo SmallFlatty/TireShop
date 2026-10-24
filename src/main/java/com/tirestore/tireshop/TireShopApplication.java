@@ -20,8 +20,4 @@ public class TireShopApplication {
         cloudinary.config.secure = true;
         return cloudinary;
     }
-    @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 }
