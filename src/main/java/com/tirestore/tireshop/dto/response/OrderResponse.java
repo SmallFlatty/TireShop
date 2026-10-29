@@ -14,7 +14,6 @@ public record OrderResponse(
         OrderStatus orderStatus,
         LocalDateTime createdAt,
         BigDecimal total,
-        Integer stock,
 
         List<OrderItem> orderItems
 ) {}

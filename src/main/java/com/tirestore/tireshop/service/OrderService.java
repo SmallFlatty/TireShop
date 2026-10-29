@@ -96,7 +96,6 @@ public class OrderService {
                 OrderStatus.NEW,
                 order.getCreatedAt(),
                 totalPrice,
-                0, // For what stock exist in OrderResponse?
                 orderItems
 
         );
@@ -119,7 +118,6 @@ public class OrderService {
                 order.getStatus(),
                 order.getCreatedAt(),
                 order.getTotal(),
-                0,
                 order.getOrderItems()
         );
     }
@@ -143,7 +141,6 @@ public class OrderService {
                 OrderStatus.CANCELLED,
                 order.getCreatedAt(),
                 order.getTotal(),
-                0,
                 order.getOrderItems()
         );
     }
@@ -170,7 +167,6 @@ public class OrderService {
                 order.getStatus(),
                 order.getCreatedAt(),
                 order.getTotal(),
-                0,
                 order.getOrderItems()
         );
     }
@@ -195,7 +191,6 @@ public class OrderService {
                     order.getStatus(),
                     order.getCreatedAt(),
                     order.getTotal(),
-                    0,
                     order.getOrderItems()
             );
             orderResponseList.add(orderResponse);
