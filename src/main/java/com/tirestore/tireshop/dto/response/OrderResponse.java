@@ -1,6 +1,7 @@
 package com.tirestore.tireshop.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.tirestore.tireshop.entity.OrderItem;
 import com.tirestore.tireshop.enums.OrderStatus;
 
 import java.math.BigDecimal;
@@ -15,5 +16,5 @@ public record OrderResponse(
         BigDecimal total,
         Integer stock,
 
-        List<OrderItemResponse> orderItems
+        List<OrderItem> orderItems
 ) {}

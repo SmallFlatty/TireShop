@@ -3,6 +3,7 @@ package com.tirestore.tireshop.entity;
 
 import com.tirestore.tireshop.entity.id.OrderItemId;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,8 +14,16 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "order_item")
 public class OrderItem {
+
+    public OrderItem(Order order, Item item, BigDecimal price, int quantity) {
+        this.order = order;
+        this.item = item;
+        this.pricePurchase = price;
+        this.quantity = quantity;
+    }
 
     @EmbeddedId
     private OrderItemId orderItemId = new OrderItemId();

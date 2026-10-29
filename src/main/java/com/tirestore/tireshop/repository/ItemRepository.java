@@ -7,6 +7,4 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Repository
 public interface ItemRepository extends JpaRepository<Item, Integer> {
-    void deactivateItem(Integer id);
-    String replaceImage(Integer id, MultipartFile image);
 }

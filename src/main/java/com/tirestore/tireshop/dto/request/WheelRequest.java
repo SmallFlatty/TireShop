@@ -5,9 +5,9 @@ import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 
 public record WheelRequest(
-        @NotNull @Size(max = 150) @NotBlank String name,
+        @Size(max = 150) @NotBlank String name,
         @NotNull String description,
-        @NotNull @Digits(integer = 8,fraction = 2) @NotNull @Positive BigDecimal price,
+        @Digits(integer = 8,fraction = 2) @NotNull @Positive BigDecimal price,
         @NotNull @PositiveOrZero Integer stock,
         @NotNull @Positive Integer diameter,
         @NotNull @Digits(integer = 2,fraction = 1) @Positive BigDecimal width,
