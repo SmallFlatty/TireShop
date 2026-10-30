@@ -12,6 +12,5 @@ public record OrderItemResponse(
     Integer quantity,
     String name,
     ProductType productType,
-    String publicId,
-    Integer stock
+    String publicId
 ) {}

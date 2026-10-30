@@ -1,6 +1,7 @@
 package com.tirestore.tireshop.service;
 
 import com.tirestore.tireshop.dto.request.OrderItemRequest;
+import com.tirestore.tireshop.dto.response.OrderItemResponse;
 import com.tirestore.tireshop.dto.response.OrderResponse;
 import com.tirestore.tireshop.entity.Account;
 import com.tirestore.tireshop.entity.Item;
@@ -14,6 +15,7 @@ import com.tirestore.tireshop.repository.OrderRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -36,17 +38,11 @@ public class OrderService {
         this.accountRepository = accountRepository;
         this.itemRepository = itemRepository;
     }
-    //TODO Stock in OrderResponse, - items bought. Remove duplicates, create method Map To OrderResponse. Check all methods logic
+    //TODO - items bought. Check all methods logic
 
     @Transactional
     public OrderResponse makeOrder(List<OrderItemRequest> request) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if(authentication == null || !authentication.isAuthenticated()) {
-            throw new IllegalStateException("Authentication required");
-        }
-
-        String userEmail = authentication.getName();
+        String userEmail = authUserEmail();
 
         Account userAccount = accountRepository.findByEmail(userEmail).orElseThrow(() -> new EntityNotFoundException("Account not found"));
 
@@ -96,7 +92,7 @@ public class OrderService {
                 OrderStatus.NEW,
                 order.getCreatedAt(),
                 totalPrice,
-                orderItems
+                mapToOrderItemResponse(orderItems)
 
         );
     }
@@ -118,7 +114,7 @@ public class OrderService {
                 order.getStatus(),
                 order.getCreatedAt(),
                 order.getTotal(),
-                order.getOrderItems()
+                mapToOrderItemResponse(order.getOrderItems())
         );
     }
 
@@ -141,18 +137,13 @@ public class OrderService {
                 OrderStatus.CANCELLED,
                 order.getCreatedAt(),
                 order.getTotal(),
-                order.getOrderItems()
+                mapToOrderItemResponse(order.getOrderItems())
         );
     }
 
     public OrderResponse getOrder(Integer orderId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if(authentication == null || !authentication.isAuthenticated()) {
-            throw new IllegalStateException("Authentication required");
-        }
-
-        String userEmail = authentication.getName();
+        String userEmail = authUserEmail();
 
         Account userAccount = accountRepository.findByEmail(userEmail).orElseThrow(() -> new EntityNotFoundException("Account not found"));
 
@@ -167,18 +158,13 @@ public class OrderService {
                 order.getStatus(),
                 order.getCreatedAt(),
                 order.getTotal(),
-                order.getOrderItems()
+                mapToOrderItemResponse(order.getOrderItems())
         );
     }
 
     public List<OrderResponse> getOrders() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if(authentication == null || !authentication.isAuthenticated()) {
-            throw new IllegalStateException("Authentication required");
-        }
-
-        String userEmail = authentication.getName();
+        String userEmail = authUserEmail();
 
         Account userAccount = accountRepository.findByEmail(userEmail).orElseThrow(() -> new EntityNotFoundException("Account not found"));
 
@@ -191,11 +177,39 @@ public class OrderService {
                     order.getStatus(),
                     order.getCreatedAt(),
                     order.getTotal(),
-                    order.getOrderItems()
+                    mapToOrderItemResponse(order.getOrderItems())
             );
             orderResponseList.add(orderResponse);
         }
         return orderResponseList;
+    }
+
+    private List<OrderItemResponse> mapToOrderItemResponse(List<OrderItem> orderItem) {
+        List<OrderItemResponse> orderItemResponseList = new ArrayList<>();
+        for(OrderItem itemObj : orderItem) {
+                Item item = itemRepository.findById(itemObj.getItem().getItemId()).orElseThrow(() -> new EntityNotFoundException("Item: " + itemObj.getItem().getItemId() + " not found"));
+                OrderItemResponse orderItemResponse = new OrderItemResponse(
+                        item.getItemId(),
+                        itemObj.getPricePurchase(),
+                        itemObj.getQuantity(),
+                        item.getName(),
+                        item.getProductType(),
+                        item.getPublicId()
+                );
+                orderItemResponseList.add(orderItemResponse);
+        }
+        return orderItemResponseList;
+    }
+
+    private String authUserEmail() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+
+        if(authentication == null || !authentication.isAuthenticated()) {
+            throw new AuthenticationCredentialsNotFoundException("Authentication required");
+        }
+
+        return authentication.getName();
     }
 
 
