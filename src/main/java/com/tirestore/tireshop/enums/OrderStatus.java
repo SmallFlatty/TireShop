@@ -5,5 +5,14 @@ public enum OrderStatus {
     CONFIRMED,
     READY,
     COMPLETED,
-    CANCELLED
+    CANCELLED;
+
+   public OrderStatus nextStatus() {
+        return switch (this) {
+            case NEW -> CONFIRMED;
+            case CONFIRMED -> READY;
+            case READY -> COMPLETED;
+            default -> null;
+        };
+    }
 }

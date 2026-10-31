@@ -5,8 +5,8 @@ import com.tirestore.tireshop.dto.response.TireResponse;
 import com.tirestore.tireshop.entity.Tire;
 import com.tirestore.tireshop.exception.ResourceNotFoundException;
 import com.tirestore.tireshop.repository.TireRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -23,13 +23,14 @@ public class TireService {
         this.imageService = imageService;
     }
 
-
+    @Transactional(readOnly = true)
     public List<TireResponse> getTiresForUser() {
         return tireRepository.findByIsActiveTrue().stream()
                 .map(this::mapToResponse)
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public List<TireResponse> getTiresForAdmin() {
         return tireRepository.findAll().stream()
                 .map(this::mapToResponse)

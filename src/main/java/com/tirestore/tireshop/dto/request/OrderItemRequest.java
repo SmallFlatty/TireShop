@@ -10,6 +10,5 @@ import java.math.BigDecimal;
 
 public record OrderItemRequest(
         @Positive @NotBlank @Id Integer itemId,
-        @Digits(integer = 8,fraction = 2) @NotNull @Positive BigDecimal price,
         @Positive @NotNull int quantity
 ){}

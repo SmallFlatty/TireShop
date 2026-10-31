@@ -1,13 +1,12 @@
 package com.tirestore.tireshop.service;
 
 import com.tirestore.tireshop.dto.request.WheelRequest;
-import com.tirestore.tireshop.dto.response.TireResponse;
 import com.tirestore.tireshop.dto.response.WheelResponse;
 import com.tirestore.tireshop.entity.Wheel;
 import com.tirestore.tireshop.exception.ResourceNotFoundException;
 import com.tirestore.tireshop.repository.WheelRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -40,18 +39,21 @@ public class WheelService {
         );
     }
 
+    @Transactional(readOnly = true)
     public List<WheelResponse> getTiresForAdmin(){
         return wheelRepository.findAll().stream()
                 .map(this::mapToResponse)
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public List<WheelResponse> getTiresForUser(){
         return wheelRepository.findByIsActiveTrue().stream()
                 .map(this::mapToResponse)
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public WheelResponse getWheelById(Integer id){
         Wheel w =  wheelRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Wheel with id " + id + " not found"));
 

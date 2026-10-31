@@ -1,5 +1,6 @@
 package com.tirestore.tireshop.service;
 
+import com.cloudinary.utils.ObjectUtils;
 import com.tirestore.tireshop.dto.request.OrderItemRequest;
 import com.tirestore.tireshop.dto.response.OrderItemResponse;
 import com.tirestore.tireshop.dto.response.OrderResponse;
@@ -13,14 +14,12 @@ import com.tirestore.tireshop.repository.AccountRepository;
 import com.tirestore.tireshop.repository.ItemRepository;
 import com.tirestore.tireshop.repository.OrderRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.io.UncheckedIOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,28 +37,29 @@ public class OrderService {
         this.accountRepository = accountRepository;
         this.itemRepository = itemRepository;
     }
-    //TODO - items bought. Check all methods logic
+    //TODO Check all methods logic
 
     @Transactional
     public OrderResponse makeOrder(List<OrderItemRequest> request) {
+
+        if(request == null || request.isEmpty()) {
+            throw new IllegalArgumentException("Order cannot be null or empty");
+        }
+
         String userEmail = authUserEmail();
 
         Account userAccount = accountRepository.findByEmail(userEmail).orElseThrow(() -> new EntityNotFoundException("Account not found"));
 
         Order order = new Order();
 
-        // Get References for orderItem, order objects
-        Order orderRef = orderRepository.getReferenceById(order.getOrderId());
-        Account accountRef = accountRepository.getReferenceById(userAccount.getUserId());
-
         List<OrderItem> orderItems = new ArrayList<>();
 
         //List of orderItems objects
         for(OrderItemRequest orderItemRequest : request) {
             orderItems.add(new OrderItem(
-                    orderRef,
+                    order,
                     itemRepository.getReferenceById(orderItemRequest.itemId()),
-                    orderItemRequest.price(),
+                    itemRepository.findById(orderItemRequest.itemId()).orElseThrow(() -> new EntityNotFoundException("item with id: "+ orderItemRequest.itemId() + " doest exist")).getPrice(),
                     orderItemRequest.quantity()));
         }
 
@@ -77,10 +77,12 @@ public class OrderService {
         BigDecimal totalPrice = BigDecimal.ZERO;
         // get total price for order
         for(OrderItem orderItem : orderItems) {
-            totalPrice = totalPrice.add(orderItem.getPricePurchase());
+            for(int i = 0; i < orderItem.getQuantity(); i++) {
+                totalPrice = totalPrice.add(orderItem.getPricePurchase());
+            }
         }
 
-        order.setAccount(accountRef);
+        order.setAccount(userAccount);
         order.setStatus(OrderStatus.NEW);
         order.setTotal(totalPrice);
         order.setOrderItems(orderItems);
@@ -99,14 +101,15 @@ public class OrderService {
 
 
     @Transactional
-    public OrderResponse changeOrderStatus(Integer orderId, OrderStatus orderStatus) {
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new EntityNotFoundException("Order with id: " + orderId + " not found"));
+    public OrderResponse changeOrderStatus(Integer orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new EntityNotFoundException("Order did not exist"));
 
-        if(orderStatus.equals(OrderStatus.CANCELLED)) {
-            throw new IllegalArgumentException("Order status cannot be CANCELLED here");
+        if(order.getStatus().equals(OrderStatus.CANCELLED)) {
+            throw new IllegalStateException("Order status cannot be updated");
         }
 
-        order.setStatus(orderStatus);
+        order.setStatus(order.getStatus().nextStatus());
+
         orderRepository.save(order);
 
         return new OrderResponse(
@@ -120,7 +123,25 @@ public class OrderService {
 
     @Transactional
     public OrderResponse cancelOrder(Integer orderId) {
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new EntityNotFoundException("Order with id: " + orderId + " not found"));
+
+        String userEmail = authUserEmail();
+
+        Account account = accountRepository.findByEmail(userEmail).orElseThrow(() -> new EntityNotFoundException("Account not found"));
+
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new EntityNotFoundException("Order did not exist"));
+
+        if(account.getUserId() != order.getAccount().getUserId()) {
+            throw new EntityNotFoundException("Order did not exist");
+        }
+
+        if(order.getStatus().equals(OrderStatus.CANCELLED)) {
+            throw new IllegalArgumentException("Order status cannot be CANCELLED here");
+        }
+
+        if(order.getStatus().equals(OrderStatus.COMPLETED)) {
+            throw new IllegalStateException("Completed order cannot be CANCELLED");
+        }
+
         order.setStatus(OrderStatus.CANCELLED);
         orderRepository.save(order);
 
@@ -141,16 +162,18 @@ public class OrderService {
         );
     }
 
+    @Transactional(readOnly = true)
     public OrderResponse getOrder(Integer orderId) {
 
         String userEmail = authUserEmail();
 
         Account userAccount = accountRepository.findByEmail(userEmail).orElseThrow(() -> new EntityNotFoundException("Account not found"));
 
-        Order order = orderRepository.findByUserId(userAccount.getUserId());
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new EntityNotFoundException("Order did not exist"));
 
-        if(order == null) {
-            throw new EntityNotFoundException("Order with id: " + orderId + " not found");
+
+        if(order.getAccount().getUserId() != userAccount.getUserId()) {
+            throw new EntityNotFoundException("Order did not exist");
         }
 
         return new OrderResponse(
@@ -162,6 +185,7 @@ public class OrderService {
         );
     }
 
+    @Transactional(readOnly = true)
     public List<OrderResponse> getOrders() {
 
         String userEmail = authUserEmail();
