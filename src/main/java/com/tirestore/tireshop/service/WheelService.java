@@ -40,14 +40,14 @@ public class WheelService {
     }
 
     @Transactional(readOnly = true)
-    public List<WheelResponse> getTiresForAdmin(){
+    public List<WheelResponse> getWheelsForAdmin(){
         return wheelRepository.findAll().stream()
                 .map(this::mapToResponse)
                 .toList();
     }
 
     @Transactional(readOnly = true)
-    public List<WheelResponse> getTiresForUser(){
+    public List<WheelResponse> getWheelsForUser(){
         return wheelRepository.findByIsActiveTrue().stream()
                 .map(this::mapToResponse)
                 .toList();

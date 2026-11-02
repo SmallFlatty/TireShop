@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/user/wheel")
+@RequestMapping("/api/user/wheel")
 public class WheelController {
 
     private final WheelService wheelService;
@@ -23,7 +23,7 @@ public class WheelController {
 
     @GetMapping("/get-all")
     public List<WheelResponse> getAllWheels() {
-        return wheelService.getTiresForUser();
+        return wheelService.getWheelsForUser();
     }
 
     @GetMapping("/get/{id}")

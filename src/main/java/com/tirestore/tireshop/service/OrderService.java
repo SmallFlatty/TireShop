@@ -1,6 +1,5 @@
 package com.tirestore.tireshop.service;
 
-import com.cloudinary.utils.ObjectUtils;
 import com.tirestore.tireshop.dto.request.OrderItemRequest;
 import com.tirestore.tireshop.dto.response.OrderItemResponse;
 import com.tirestore.tireshop.dto.response.OrderResponse;
@@ -37,7 +36,6 @@ public class OrderService {
         this.accountRepository = accountRepository;
         this.itemRepository = itemRepository;
     }
-    //TODO Check all methods logic
 
     @Transactional
     public OrderResponse makeOrder(List<OrderItemRequest> request) {
