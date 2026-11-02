@@ -10,6 +10,9 @@ import com.tirestore.tireshop.repository.CartItemRepository;
 import com.tirestore.tireshop.repository.ItemRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -28,7 +31,10 @@ public class CartService {
     }
 
     @Transactional
-    public void addToCart(AddToCartRequest addToCartRequest, int userId) {
+    public void addToCart(AddToCartRequest addToCartRequest) {
+
+        int userId = accountRepository.findByEmail(authUserEmail()).orElseThrow(()-> new EntityNotFoundException("Account not found")).getUserId();
+
         CartItemId cartItemId = new CartItemId(userId,addToCartRequest.itemId());
 
         cartItemRepository.findById(cartItemId).ifPresentOrElse(
@@ -48,7 +54,10 @@ public class CartService {
     }
 
     @Transactional
-    public void removeFromCart(int userId, int itemId) {
+    public void removeFromCart(int itemId) {
+
+        int userId = accountRepository.findByEmail(authUserEmail()).orElseThrow(()-> new EntityNotFoundException("Account not found")).getUserId();
+
         CartItemId cartItemId = new CartItemId(userId,itemId);
 
         cartItemRepository.findById(cartItemId).ifPresentOrElse(
@@ -60,12 +69,25 @@ public class CartService {
     }
 
     @Transactional
-    public void changeQuantity(int userId, int itemId, int quantity) {
+    public void changeQuantity(int itemId, int quantity) {
+
+        int userId = accountRepository.findByEmail(authUserEmail()).orElseThrow(()-> new EntityNotFoundException("Account not found")).getUserId();
+
         CartItemId cartItemId = new CartItemId(userId,itemId);
 
         CartItem cartItem = cartItemRepository.findById(cartItemId).orElseThrow(() -> new EntityNotFoundException("Item not found"));
         cartItem.setQuantity(quantity);
 
         cartItemRepository.save(cartItem);
+    }
+
+    private String authUserEmail(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if(authentication == null || !authentication.isAuthenticated()) {
+            throw new AuthenticationCredentialsNotFoundException("User not authenticated");
+        }
+
+        return authentication.getName();
     }
 }
