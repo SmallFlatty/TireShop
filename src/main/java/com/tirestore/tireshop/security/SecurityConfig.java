@@ -2,6 +2,7 @@ package com.tirestore.tireshop.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -36,6 +37,7 @@ public class SecurityConfig {
                         )
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests.requestMatchers("/api/auth/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/user/wheel/**","/api/user/tire/**").permitAll()
                                 .anyRequest().authenticated()
                         );
         return http.build();

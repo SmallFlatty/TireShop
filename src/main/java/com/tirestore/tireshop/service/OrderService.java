@@ -9,10 +9,10 @@ import com.tirestore.tireshop.entity.Order;
 import com.tirestore.tireshop.entity.OrderItem;
 import com.tirestore.tireshop.enums.OrderStatus;
 import com.tirestore.tireshop.exception.ItemOutOfStockException;
+import com.tirestore.tireshop.exception.ResourceNotFoundException;
 import com.tirestore.tireshop.repository.AccountRepository;
 import com.tirestore.tireshop.repository.ItemRepository;
 import com.tirestore.tireshop.repository.OrderRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
@@ -39,14 +39,13 @@ public class OrderService {
 
     @Transactional
     public OrderResponse makeOrder(List<OrderItemRequest> request) {
-
         if(request == null || request.isEmpty()) {
             throw new IllegalArgumentException("Order cannot be null or empty");
         }
 
         String userEmail = authUserEmail();
 
-        Account userAccount = accountRepository.findByEmail(userEmail).orElseThrow(() -> new EntityNotFoundException("Account not found"));
+        Account userAccount = accountRepository.findByEmail(userEmail).orElseThrow(() -> new ResourceNotFoundException("Account not found"));
 
         Order order = new Order();
 
@@ -57,12 +56,12 @@ public class OrderService {
             orderItems.add(new OrderItem(
                     order,
                     itemRepository.getReferenceById(orderItemRequest.itemId()),
-                    itemRepository.findById(orderItemRequest.itemId()).orElseThrow(() -> new EntityNotFoundException("item with id: "+ orderItemRequest.itemId() + " doest exist")).getPrice(),
+                    itemRepository.findById(orderItemRequest.itemId()).orElseThrow(() -> new ResourceNotFoundException("item with id: "+ orderItemRequest.itemId() + " doest exist")).getPrice(),
                     orderItemRequest.quantity()));
         }
 
         for(OrderItem orderItem : orderItems) {
-            Item item = itemRepository.findById(orderItem.getItem().getItemId()).orElseThrow(() -> new EntityNotFoundException("Item with id: " + orderItem.getItem().getItemId() + " not found"));
+            Item item = itemRepository.findById(orderItem.getItem().getItemId()).orElseThrow(() -> new ResourceNotFoundException("Item with id: " + orderItem.getItem().getItemId() + " not found"));
             if(item.getStock() < orderItem.getQuantity()) {
                 throw new ItemOutOfStockException("Item:" + item.getName() + " is out of stock");
             }else{
@@ -100,7 +99,7 @@ public class OrderService {
 
     @Transactional
     public OrderResponse changeOrderStatus(Integer orderId) {
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new EntityNotFoundException("Order did not exist"));
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Order did not exist"));
 
         if(order.getStatus().equals(OrderStatus.CANCELLED)) {
             throw new IllegalStateException("Order status cannot be updated");
@@ -124,12 +123,12 @@ public class OrderService {
 
         String userEmail = authUserEmail();
 
-        Account account = accountRepository.findByEmail(userEmail).orElseThrow(() -> new EntityNotFoundException("Account not found"));
+        Account account = accountRepository.findByEmail(userEmail).orElseThrow(() -> new ResourceNotFoundException("Account not found"));
 
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new EntityNotFoundException("Order did not exist"));
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Order did not exist"));
 
         if(account.getUserId() != order.getAccount().getUserId()) {
-            throw new EntityNotFoundException("Order did not exist");
+            throw new ResourceNotFoundException("Order did not exist");
         }
 
         if(order.getStatus().equals(OrderStatus.CANCELLED)) {
@@ -165,13 +164,13 @@ public class OrderService {
 
         String userEmail = authUserEmail();
 
-        Account userAccount = accountRepository.findByEmail(userEmail).orElseThrow(() -> new EntityNotFoundException("Account not found"));
+        Account userAccount = accountRepository.findByEmail(userEmail).orElseThrow(() -> new ResourceNotFoundException("Account not found"));
 
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new EntityNotFoundException("Order did not exist"));
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Order did not exist"));
 
 
         if(order.getAccount().getUserId() != userAccount.getUserId()) {
-            throw new EntityNotFoundException("Order did not exist");
+            throw new ResourceNotFoundException("Order did not exist");
         }
 
         return new OrderResponse(
@@ -188,7 +187,7 @@ public class OrderService {
 
         String userEmail = authUserEmail();
 
-        Account userAccount = accountRepository.findByEmail(userEmail).orElseThrow(() -> new EntityNotFoundException("Account not found"));
+        Account userAccount = accountRepository.findByEmail(userEmail).orElseThrow(() -> new ResourceNotFoundException("Account not found"));
 
         List<Order> orders = orderRepository.findAllByUserId(userAccount.getUserId());
 
@@ -209,7 +208,7 @@ public class OrderService {
     private List<OrderItemResponse> mapToOrderItemResponse(List<OrderItem> orderItem) {
         List<OrderItemResponse> orderItemResponseList = new ArrayList<>();
         for(OrderItem itemObj : orderItem) {
-                Item item = itemRepository.findById(itemObj.getItem().getItemId()).orElseThrow(() -> new EntityNotFoundException("Item: " + itemObj.getItem().getItemId() + " not found"));
+                Item item = itemRepository.findById(itemObj.getItem().getItemId()).orElseThrow(() -> new ResourceNotFoundException("Item: " + itemObj.getItem().getItemId() + " not found"));
                 OrderItemResponse orderItemResponse = new OrderItemResponse(
                         item.getItemId(),
                         itemObj.getPricePurchase(),

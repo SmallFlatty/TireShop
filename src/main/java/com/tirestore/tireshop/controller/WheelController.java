@@ -31,5 +31,4 @@ public class WheelController {
         return wheelService.getWheelById(id);
     }
 
-
 }

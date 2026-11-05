@@ -30,6 +30,4 @@ public class CartController {
     public void changeQuantity(@RequestParam Integer itemId, @RequestParam Integer quantity) {
         cartService.changeQuantity(itemId, quantity);
     }
-
-
 }

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/admin/order")
+@PreAuthorize("hasRole('ADMIN')")
 public class AdminOrderController {
 
     private final OrderService orderService;
@@ -19,8 +20,7 @@ public class AdminOrderController {
         this.orderService = orderService;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/change-statud/{id}")
+    @PutMapping("/change-status/{id}")
     public OrderResponse changeOrderStatus(@PathVariable Integer id) {
         return orderService.changeOrderStatus(id);
     }
