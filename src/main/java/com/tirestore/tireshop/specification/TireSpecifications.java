@@ -11,7 +11,7 @@ import java.util.List;
 public class TireSpecifications {
 
     public static Specification<Tire> getTireSpecification(TireFilterRequest request) {
-        return (root, query, cb)->{
+        return (root, _, cb)->{
             List<Predicate> predicates = new ArrayList<>();
 
             if(request.width() != null)

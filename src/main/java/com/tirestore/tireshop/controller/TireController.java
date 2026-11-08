@@ -1,12 +1,13 @@
 package com.tirestore.tireshop.controller;
 
 
+import com.tirestore.tireshop.dto.request.TireFilterRequest;
 import com.tirestore.tireshop.dto.response.TireResponse;
 import com.tirestore.tireshop.service.TireService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,5 +28,13 @@ public class TireController {
     @GetMapping("/get/{id}")
     public TireResponse getTireById(@PathVariable Integer id) {
         return tireService.getTireById(id);
+    }
+
+    @PostMapping("filtered")
+    public Page<TireResponse> getFilteredTires(
+            @RequestBody TireFilterRequest request,
+            @PageableDefault(size = 20, sort = "price") Pageable pageable ) {
+
+        return tireService.getFilteredTiresForUser(request,pageable);
     }
 }
