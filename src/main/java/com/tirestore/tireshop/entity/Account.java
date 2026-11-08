@@ -6,9 +6,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.JdbcTypeCode;
-
-import java.sql.Types;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.type.PostgreSQLEnumJdbcType;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,8 +32,8 @@ public class Account {
 
 
     @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(Types.OTHER)
-    @Column(name = "role")
+    @JdbcType(PostgreSQLEnumJdbcType.class)
+    @Column(name = "role", columnDefinition = "account_roles")
     private Role role;
 
     @Column(name = "full_name")

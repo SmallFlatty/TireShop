@@ -31,12 +31,12 @@ public class OrderItem {
     @MapsId("orderId")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "order_id")
-    private Order order;// !-
+    private Order order;
 
     @MapsId("itemId")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "item_id")
-    private Item item;// !-
+    private Item item;
 
     @Column(name = "price_at_purchase")
     private BigDecimal pricePurchase;

@@ -6,10 +6,10 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.type.PostgreSQLEnumJdbcType;
 
 import java.math.BigDecimal;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,8 +38,8 @@ public abstract class Item {
     private String name;
 
     @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(Types.OTHER)
-    @Column(name = "product_type")
+    @JdbcType(PostgreSQLEnumJdbcType.class)
+    @Column(name = "product_type", columnDefinition = "pro_type")
     private ProductType productType;
 
     @Column(name = "description")

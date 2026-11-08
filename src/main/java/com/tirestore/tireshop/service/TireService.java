@@ -1,10 +1,14 @@
 package com.tirestore.tireshop.service;
 
+import com.tirestore.tireshop.dto.request.TireFilterRequest;
 import com.tirestore.tireshop.dto.request.TireRequest;
 import com.tirestore.tireshop.dto.response.TireResponse;
 import com.tirestore.tireshop.entity.Tire;
 import com.tirestore.tireshop.exception.ResourceNotFoundException;
 import com.tirestore.tireshop.repository.TireRepository;
+import com.tirestore.tireshop.specification.TireSpecifications;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -120,5 +124,11 @@ public class TireService {
         tireRepository.save(t);
 
         return mapToResponse(t);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<TireResponse> getFilteredTiresForUser(TireFilterRequest request, Pageable pageable) {
+        Page<Tire> filteredTires = tireRepository.findAll(TireSpecifications.getTireSpecification(request), pageable);
+        return filteredTires.map(this::mapToResponse);
     }
 }

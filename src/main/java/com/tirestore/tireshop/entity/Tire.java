@@ -6,7 +6,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.dialect.type.PostgreSQLEnumJdbcType;
 
 import java.math.BigDecimal;
 import java.sql.Types;
@@ -42,7 +44,7 @@ public class Tire extends Item {
     private Integer diameter;
 
     @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(Types.OTHER)
-    @Column(name = "season_type")
+    @JdbcType(PostgreSQLEnumJdbcType.class)
+    @Column(name = "season_type", columnDefinition = "sea_type")
     private SeasonType seasonType;
 }

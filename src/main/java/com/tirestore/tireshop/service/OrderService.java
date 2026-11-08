@@ -189,7 +189,7 @@ public class OrderService {
 
         Account userAccount = accountRepository.findByEmail(userEmail).orElseThrow(() -> new ResourceNotFoundException("Account not found"));
 
-        List<Order> orders = orderRepository.findAllByUserId(userAccount.getUserId());
+        List<Order> orders = orderRepository.findAllByAccount_UserId(userAccount.getUserId());
 
         List<OrderResponse> orderResponseList = new ArrayList<>();
         for(Order order : orders) {

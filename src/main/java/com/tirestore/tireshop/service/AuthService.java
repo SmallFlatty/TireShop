@@ -37,7 +37,7 @@ public class AuthService {
     public String createAccount(AccountRequest accountRequest) {
 
         accountRepository.findByEmail(accountRequest.email()).ifPresentOrElse(
-                account -> {
+                _ -> {
                     throw new ResourceAlreadyExistsException("Account already exists");
                 },() -> {
                     accountRepository.save(new Account(
@@ -66,5 +66,17 @@ public class AuthService {
        return new LoginResponse(token,expiresIn, fullName,role);
     }
 
-
+    public void createAdminAccount(AccountRequest accountRequest) {
+        accountRepository.findByEmail(accountRequest.email()).ifPresentOrElse(
+                _ -> {},
+                () -> {
+                    accountRepository.save(new Account(
+                            Role.ADMIN,
+                            accountRequest.fullName(),
+                            bCryptPasswordEncoder.encode(accountRequest.password()),
+                            accountRequest.email()
+                    ));
+                }
+        );
+    }
 }
