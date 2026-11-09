@@ -10,6 +10,12 @@ import java.util.List;
 
 public interface OrderItemRepository extends JpaRepository<OrderItem, Integer> {
 
-    @Query("SELECT Item FROM OrderItem oi GROUP BY oi.item ORDER BY COUNT(oi.item) DESC")
-    List<Item> findMostPopularItems(Pageable pageable);
+    @Query("""
+        SELECT oi.item.itemId
+        FROM OrderItem oi
+        WHERE oi.item.isActive = true
+        GROUP BY oi.item.itemId
+        ORDER BY SUM(oi.quantity) DESC
+        """)
+    List<Integer> findMostPopularItemIds(Pageable pageable);
 }

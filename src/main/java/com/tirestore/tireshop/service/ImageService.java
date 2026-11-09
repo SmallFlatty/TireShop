@@ -32,7 +32,12 @@ public class ImageService {
                     file.getBytes(),
                     ObjectUtils.asMap("folder", "tire-shop/tires")
             );
-            return (String) result.get("id");
+
+            String publicId = (String) result.get("public_id");
+            if(publicId == null){
+                throw new IllegalStateException("Cloudinary didnt return public id");
+            }
+            return publicId;
         } catch (IOException e) {
             throw new UncheckedIOException("Cloudinary upload failed", e);
         }

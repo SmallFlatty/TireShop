@@ -4,6 +4,7 @@ package com.tirestore.tireshop.controller;
 import com.tirestore.tireshop.dto.request.TireFilterRequest;
 import com.tirestore.tireshop.dto.response.TireResponse;
 import com.tirestore.tireshop.service.TireService;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -33,7 +34,7 @@ public class TireController {
     @PostMapping("filtered")
     public Page<TireResponse> getFilteredTires(
             @RequestBody TireFilterRequest request,
-            @PageableDefault(size = 20, sort = "price") Pageable pageable ) {
+            @ParameterObject @PageableDefault(size = 20, sort = "price") Pageable pageable ) {
 
         return tireService.getFilteredTiresForUser(request,pageable);
     }
